@@ -5,7 +5,7 @@ var sanbox;
 
 var obj;
 
-var menu = function (sandbox, fn) {
+var menu = function (fn) {
     $.ajax({
         url: '/apis/v/menus/0',
         headers: {
@@ -14,14 +14,22 @@ var menu = function (sandbox, fn) {
         dataType: 'json',
         success: function (data) {
             obj = data;
-            navigation(sandbox, fn, data);
+            navigation(sanbox, function (err, f) {
+                if (!fn) {
+                    return;
+                }
+                fn(err, function () {
+                    sanbox = null;
+                    f();
+                });
+            }, data);
         },
         error: function () {
             if (!fn) {
                 return;
             }
             fn(true, function () {
-
+                sanbox = null;
             });
         }
     });
@@ -29,21 +37,19 @@ var menu = function (sandbox, fn) {
 
 module.exports = function (sandbox, fn, options) {
     sanbox = sandbox;
-    console.log(sandbox);
     if (obj) {
         navigation(sandbox, fn, obj);
         return;
     }
-    menu(sandbox, fn);
+    menu(fn);
 };
 
 
-serand.on('user', 'login', function (usr) {
-    menu(sanbox, null);
+serand.on('user', 'logged in', function (usr) {
+    menu(null);
 });
 
 
-serand.on('user', 'logout', function (usr) {
-    menu(sanbox, null);
+serand.on('user', 'logged out', function (usr) {
+    menu(null);
 });
-
