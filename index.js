@@ -1,55 +1,33 @@
 var serand = require('serand');
 var navigation = require('navigation');
 
-var sanbox;
-
-var obj;
-
-var menu = function (fn) {
+var render = function () {
     $.ajax({
         url: '/apis/v/menus/0',
         headers: {
-            'x-host': 'autos.serandives.com'
+            'x-host': 'accounts.serandives.com'
         },
         dataType: 'json',
         success: function (data) {
-            obj = data;
-            navigation(sanbox, function (err, f) {
-                if (!fn) {
-                    return;
-                }
-                fn(err, function () {
-                    sanbox = null;
-                    f();
-                });
-            }, data);
+            serand.emit('navigation', 'render', data);
         },
         error: function () {
-            if (!fn) {
-                return;
-            }
-            fn(true, function () {
-                sanbox = null;
-            });
+
         }
     });
 };
 
 module.exports = function (sandbox, fn, options) {
-    sanbox = sandbox;
-    if (obj) {
-        navigation(sandbox, fn, obj);
-        return;
-    }
-    menu(fn);
+    navigation(sandbox, fn, options);
+    render();
 };
 
 
 serand.on('user', 'logged in', function (usr) {
-    menu(null);
+    render();
 });
 
 
 serand.on('user', 'logged out', function (usr) {
-    menu(null);
+    render();
 });
