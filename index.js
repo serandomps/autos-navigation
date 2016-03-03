@@ -9,7 +9,7 @@ var render = function (done) {
     $.ajax({
         url: '/apis/v/menus/1',
         headers: {
-            'x-host': 'accounts.serandives.com'
+            'X-Host': 'accounts.serandives.com'
         },
         dataType: 'json',
         success: function (links) {
