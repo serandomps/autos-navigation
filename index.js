@@ -8,7 +8,7 @@ var ready = false;
 
 var render = function (done) {
     $.ajax({
-        url: utils.resolve('accounts://apis/v/menus/1'),
+        url: utils.resolve('accounts://apis/v/menus/2'),
         dataType: 'json',
         success: function (links) {
             done(null, links);
@@ -19,9 +19,20 @@ var render = function (done) {
     });
 };
 
+var filter = function (options, user, links) {
+    if (user) {
+        return links;
+    }
+    links.signin = {url: '/signin', title: 'Sign in'};
+    links.signup = {url: '/signup', title: 'Sign up'};
+    return links;
+};
+
 module.exports = function (sandbox, options, done) {
+    options = options || {};
     context = {
         sandbox: sandbox,
+        options: options,
         done: done
     };
     if (!ready) {
@@ -31,7 +42,7 @@ module.exports = function (sandbox, options, done) {
         if (err) {
             return done(err);
         }
-        navigation(sandbox, links, done);
+        navigation(sandbox, filter(options, null, links), done);
     });
 };
 
@@ -44,7 +55,7 @@ serand.on('user', 'ready', function (user) {
         if (err) {
             return done(err);
         }
-        navigation(context.sandbox, links, context.done);
+        navigation(context.sandbox, filter(context.options, user, links), context.done);
     });
 });
 
