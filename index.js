@@ -28,9 +28,10 @@ var filter = function (options, user, links) {
     return links;
 };
 
-module.exports = function (sandbox, options, done) {
+module.exports = function (ctx, sandbox, options, done) {
     options = options || {};
     context = {
+        ctx: ctx,
         sandbox: sandbox,
         options: options,
         done: done
@@ -42,7 +43,7 @@ module.exports = function (sandbox, options, done) {
         if (err) {
             return done(err);
         }
-        navigation(sandbox, filter(options, null, links), done);
+        navigation(ctx, sandbox, filter(options, null, links), done);
     });
 };
 
@@ -55,20 +56,6 @@ serand.on('user', 'ready', function (user) {
         if (err) {
             return done(err);
         }
-        navigation(context.sandbox, filter(context.options, user, links), context.done);
+        navigation(context.ctx, context.sandbox, filter(context.options, user, links), context.done);
     });
 });
-
-/*serand.on('user', 'logged in', function () {
- console.log('----------------------------2');
- render(function(err, links) {
- serand.emit('navigation', 'render', links);
- });
- });
-
- serand.on('user', 'logged out', function () {
- console.log('----------------------------3');
- render(function(err, links) {
- serand.emit('navigation', 'render', links);
- });
- });*/
