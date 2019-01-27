@@ -29,11 +29,10 @@ var filter = function (options, user, links) {
 };
 
 module.exports = function (ctx, container, options, done) {
-    var sandbox = container.sandbox;
     options = options || {};
     context = {
         ctx: ctx,
-        sandbox: sandbox,
+        container: container,
         options: options,
         done: done
     };
@@ -55,8 +54,8 @@ serand.on('user', 'ready', function (user) {
     }
     render(function(err, links) {
         if (err) {
-            return done(err);
+            return context.done(err);
         }
-        navigation(context.ctx, context.sandbox, filter(context.options, user, links), context.done);
+        navigation(context.ctx, context.container, filter(context.options, user, links), context.done);
     });
 });
